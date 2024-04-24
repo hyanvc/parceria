@@ -133,7 +133,6 @@ async function checkLINKUNICO(cpf, linkunico) {
         "CPF": cpf,
         "linkunico": linkunico
     }
-       debugger;
     const response = await apiparceria(`${urlAPI}/CPF/verificarlink`, {
         method: "POST",
         body: JSON.stringify(body)

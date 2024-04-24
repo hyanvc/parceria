@@ -1,12 +1,16 @@
-async function finalizarComQuiz(cpf, linkunico,codigo) {
+async function finalizar(cpf, linkunico) {
     await setupTokenParceria();
     if (await checkLINKUNICO(cpf, linkunico)) {
-        let eventoValor;       
-        var evento = codigo;
-        if (evento == 21) {
-            eventoValor = 21;
-        } else if (evento == 16) {
-            eventoValor = 16;
+        let eventoValor;
+        var eventoid = document.getElementById("Evento-Parceria");
+        var evento = eventoid.value;
+
+        if (evento.includes("Notícias")) {
+            eventoValor = 19;
+        } else if (evento.includes("Mercado em foco")) {
+            eventoValor = 20;
+        } else if (evento.includes("TV Capef")) {
+            eventoValor = 18;
         }
         if (eventoValor) {
 
@@ -18,14 +22,17 @@ async function finalizarComQuiz(cpf, linkunico,codigo) {
     }
 
 }
+
 async function validarPontuar(cpf) {
     return await checkCPFParceria(cpf);
 
 }
-// const urlAPI = "https://apiparceriapremiada.capef.com.br"; //producao
-const urlAPI = "https://ici002.capef.com.br/apiparceriapremiada"; //homolog
+
+const urlAPI = "https://apiparceriapremiada.capef.com.br"; //producao
+// const urlAPI = "https://ici002.capef.com.br/apiparceriapremiada"; //homolog
 const authUserName = "Hero99";
 const authPassword = "d7OwsEqTXc";
+
 async function setupTokenParceria() {
     const authResponse = await fetch(`${urlAPI}/auth/access-token`, {
         method: "POST",
@@ -44,12 +51,12 @@ async function setupTokenParceria() {
 
     const authData = await authResponse.json();
     token = authData.access_Token;
-    localStorage.setItem('authTokenParceria', token);
-    
+    localStorage.setItem('authTokenparceria', token);
 }
+
 async function authFetchParceria(url, options = {}) {
     try {
-        let token = localStorage.getItem('authTokenParceria');
+        let token = localStorage.getItem('authTokenparceria');
         const headers = {
             ...options.headers,
             "Authorization": `Bearer ${token}`,
@@ -61,7 +68,7 @@ async function authFetchParceria(url, options = {}) {
         });
 
         if (dataResponse.status === 401) {
-            localStorage.removeItem("authTokenParceria");
+            localStorage.removeItem("authTokenparceria");
             await setupTokenParceria();
         }
 
@@ -101,7 +108,9 @@ async function authFetchParceria(url, options = {}) {
         return error
     }
 }
+
 const apiparceria = authFetchParceria;
+
 async function checkCPFParceria(cpf) {
     const response = await apiparceria(`${urlAPI}/CPF/${cpf}`);
     const data = await response;
@@ -117,12 +126,13 @@ async function checkCPFParceria(cpf) {
     }
     return valido;
 }
+
+
 async function checkLINKUNICO(cpf, linkunico) {
     const body = {
         "CPF": cpf,
         "linkunico": linkunico
     }
-
     const response = await apiparceria(`${urlAPI}/CPF/verificarlink`, {
         method: "POST",
         body: JSON.stringify(body)
@@ -130,10 +140,12 @@ async function checkLINKUNICO(cpf, linkunico) {
     const data = await response;
     if (data.status == 400) {
         $('.w-form-done').toggleClass('w-form-done w-form-fail').text("Você já pontuou neste conteúdo.");
+
     } else {
         return data.id !== null && data.id !== undefined;
     }
 }
+
 async function pontuarCPF(cpf, evento, linkunico) {
     const pontosJson = {
         "CPF": cpf,
@@ -151,28 +163,84 @@ async function pontuarCPF(cpf, evento, linkunico) {
         console.error("Erro ao adicionar pontuação:", response.statusText);
     }
 }
+
 $(document).ready(function () {
-    $('.button-parceria').click(function () {   
-        var inputCpf = $('#cpf-parceria');
-        var valorCpf = inputCpf.val();
-        var cpf = valorCpf.replace(/\D/g, '');;
-        var quiz = true;
-        const linkunico = window.location.href;
+    var eventoid = document.getElementById("Evento-Parceria");
+    let iddobotao;
+    let contemcodigo = false;
+    var evento = eventoid.value;
+    if (evento.includes("Notícias")) {
+        iddobotao = "btnparceria-noticias";
+    } else if (evento.includes("Mercado em foco")) {
+        iddobotao = "btnparceria-mef";
+    } else if (evento.includes("TV Capef")) {
+        iddobotao = "btnparceria-tvcapef";
+    }
 
-        var idEvento = $('#Evento-Quiz').val();
-        var CODIGO;
+    $('#' + iddobotao).click(function () {
 
-        if (idEvento === "Acontece") {
-            CODIGO = 21; // Código para o evento "Acontece"
-        } else if (idEvento === "Relatorio Anual") {
-            CODIGO = 16; // Código para o evento "Relatorio Anual"
-        } else {
-            console.error("Id do evento inválido");
-            CODIGO = 16; // Definir o valor padrão como 16
+        let idcodigo;
+        var evento = eventoid.value;
+        if (evento.includes("Notícias")) {
+            idcodigo = "-noticias";
+        } else if (evento.includes("Mercado em foco")) {
+            idcodigo = "-mef";
+        } else if (evento.includes("TV Capef")) {
+            idcodigo = "-tvcapef";
         }
 
-        if (quiz) {
-            finalizarComQuiz(cpf, linkunico, CODIGO);
+        var iddocodigo = "C-digo-do-conte-do-3" + idcodigo;
+        var inputElement = $('#' + iddocodigo);
+        var inputCpf = $('#cpf-parceria' + idcodigo);
+       debugger;
+        var valorCpf = inputCpf.val();
+        var cpf = valorCpf.replace(/\D/g, '');
+        if (inputElement.length > 0) {
+            var codigodigitado = inputElement.val();
+        }
+        let respostacodigo;
+        if(!idcodigo.includes("noticia"))
+            {
+             respostacodigo = $('#codigopontuacao' + idcodigo).val();
+             contemcodigo = true;
+            } else
+            
+            {
+                respostacodigo = 0;
+            }
+
+        var codigo = respostacodigo;
+        const linkunico = window.location.href;
+
+        if(contemcodigo)
+        {
+            if(codigo != codigodigitado)
+            {
+                $('.w-form-done').toggleClass('w-form-done w-form-fail').text("Código inválido para o vídeo.");
+                return;
+
+            }
+        }
+
+
+        if (codigodigitado != null && codigodigitado != "") {
+            if (codigodigitado != null && codigodigitado != "") {
+                if (codigo === codigodigitado) {
+                    finalizar(cpf, linkunico);
+                }
+            } else { }
+        } else {
+            if(!idcodigo.includes("noticia"))
+            {
+                if (inputElement.length > 0) {
+                    finalizar(cpf, linkunico);
+                }
+            } else
+            {
+                finalizar(cpf, linkunico);
+
+            }
+           
         }
     });
 });
