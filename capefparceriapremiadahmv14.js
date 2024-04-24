@@ -115,15 +115,26 @@ async function checkCPFParceria(cpf) {
     const response = await apiparceria(`${urlAPI}/CPF/${cpf}`);
     const data = await response;
 
+    var eventoid = document.getElementById("Evento-Parceria");
+    let iddobotao;
+    var evento = eventoid.value;
+    if (evento.includes("Notícias")) {
+        iddobotao = "sucesso-noticias2";
+    } else if (evento.includes("Mercado em foco")) {
+        iddobotao = "sucesso-mef2";
+    } else if (evento.includes("TV Capef")) {
+        iddobotao = "sucesso-tvcapef2";
+    }
+
     if (data.id === "NaoEParticipante") {
-        $('#sucesso-noticias2').toggleClass('w-form-done w-form-fail').text("CPF não habilitado para o programa.");
+        $('#' + iddobotao).toggleClass('w-form-done w-form-fail').text("CPF não habilitado para o programa.");
         
         return false;
     }
 
     const valido = data.id !== null && data.id !== undefined;
     if (!valido) {
-        $('#sucesso-noticias2').toggleClass('w-form-done w-form-fail').text("CPF não cadastrado no Programa.");
+        $('#' + iddobotao).toggleClass('w-form-done w-form-fail').text("CPF não cadastrado no Programa.");
     }
     return valido;
 }
@@ -140,7 +151,17 @@ async function checkLINKUNICO(cpf, linkunico) {
     });
     const data = await response;
     if (data.status == 400) {
-        $('.w-form-done').toggleClass('w-form-done w-form-fail').text("Você já pontuou neste conteúdo.");
+        var eventoid = document.getElementById("Evento-Parceria");
+        let iddobotao;
+        var evento = eventoid.value;
+        if (evento.includes("Notícias")) {
+            iddobotao = "sucesso-noticias2";
+        } else if (evento.includes("Mercado em foco")) {
+            iddobotao = "sucesso-mef2";
+        } else if (evento.includes("TV Capef")) {
+            iddobotao = "sucesso-tvcapef2";
+        }
+        $('#' + iddobotao).toggleClass('w-form-done w-form-fail').text("Você já pontuou neste conteúdo.");
 
     } else {
         return data.id !== null && data.id !== undefined;
@@ -159,7 +180,17 @@ async function pontuarCPF(cpf, evento, linkunico) {
     });
 
     if (response.chamadoPontuacaoId) {
-        $('.w-form-done').text("Seus pontos foram creditados com sucesso!");
+        var eventoid = document.getElementById("Evento-Parceria");
+        let iddobotao;
+        var evento = eventoid.value;
+        if (evento.includes("Notícias")) {
+            iddobotao = "sucesso-noticias2";
+        } else if (evento.includes("Mercado em foco")) {
+            iddobotao = "sucesso-mef2";
+        } else if (evento.includes("TV Capef")) {
+            iddobotao = "sucesso-tvcapef2";
+        }
+        $('#' + iddobotao).text("Seus pontos foram creditados com sucesso!");
     } else {
         console.error("Erro ao adicionar pontuação:", response.statusText);
     }
@@ -217,7 +248,17 @@ $(document).ready(function () {
         {
             if(codigo != codigodigitado)
             {
-                $('.w-form-done').toggleClass('w-form-done w-form-fail').text("Código inválido para o vídeo.");
+                var eventoidbtn = document.getElementById("Evento-Parceria");
+        let iddobotaosuccess;
+        var eventobtn = eventoidbtn.value;
+        if (eventobtn.includes("Notícias")) {
+            iddobotaosuccess = "sucesso-noticias2";
+        } else if (eventobtn.includes("Mercado em foco")) {
+            iddobotaosuccess = "sucesso-mef2";
+        } else if (eventobtn.includes("TV Capef")) {
+            iddobotaosuccess = "sucesso-tvcapef2";
+        }
+        $('#' + iddobotaosuccess).toggleClass('w-form-done w-form-fail').text("Código inválido para o vídeo.");
                 return;
 
             }
