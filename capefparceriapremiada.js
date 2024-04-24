@@ -116,13 +116,14 @@ async function checkCPFParceria(cpf) {
     const data = await response;
 
     if (data.id === "NaoEParticipante") {
-        $('.w-form-done').toggleClass('w-form-done w-form-fail').text("CPF não habilitado para o programa.");
+        $('#sucesso-noticias').toggleClass('w-form-done w-form-fail').text("CPF não habilitado para o programa.");
+        
         return false;
     }
 
     const valido = data.id !== null && data.id !== undefined;
     if (!valido) {
-        $('.w-form-done').toggleClass('w-form-done w-form-fail').text("CPF não cadastrado no Programa.");
+        $('#sucesso-noticias').toggleClass('w-form-done w-form-fail').text("CPF não cadastrado no Programa.");
     }
     return valido;
 }
